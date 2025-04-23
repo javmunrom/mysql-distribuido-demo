@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MySQL Distribuido – Dashboard</title>
+
+    <!-- Tipografía profesional -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* Paleta y variables */
+      :root {
+        --background: #f2f3f5; /* gris claro en vez de azul */
+        --surface: #ffffff;
+        --primary: #ffbf0f;
+        --primary-hover: #f4b303;
+        --text: #1f2937;
+        --radius: 12px;
+        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+        --shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.16);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --background: #15181d;
+          --surface: #1f2937;
+          --text: #f3f4f6;
+          --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+          --shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.48);
+        }
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        height: 100vh;
+        font-family: "Inter", system-ui, sans-serif;
+        background: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        overflow: hidden; /* sin scroll global */
+        display: flex;
+        justify-content: center;
+        align-items: start;
+      }
+
+      /* Contenedor principal */
+      .board {
+        max-width: 1200px;
+        height: calc(100% - 2rem);
+        margin: 1rem auto;
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 1.5rem 2rem;
+        box-shadow: var(--shadow-lg); /* sombra más notoria */
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Header */
+      .dashboard-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-shrink: 0;
+      }
+      .dashboard-title {
+        font-size: clamp(1.6rem, 3vw, 2rem);
+        font-weight: 600;
+        margin: 0;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.55rem 1.1rem;
+        background: var(--primary);
+        color: #1f2937;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.2s ease, transform 0.15s ease,
+          box-shadow 0.15s ease;
+        box-shadow: var(--shadow-md);
+      }
+      .btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+      }
+      .btn:active {
+        transform: none;
+      }
+
+      /* Layout principal */
+      .content {
+        display: grid;
+        grid-template-columns: 1fr 0.85fr;
+        gap: 2rem;
+        flex: 1 1 auto;
+        overflow: hidden;
+        align-items: center;
+      }
+
+      .left-column {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        min-width: 0;
+      }
+
+      .card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 1.2rem 1.2rem;
+        box-shadow: var(--shadow-md);
+        margin: 15px;
+      }
+
+      h2 {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin: 0 0 1rem;
+      }
+
+      /* Estados */
+      .status-running {
+        color: #22c55e;
+        font-weight: 600;
+      }
+      .status-exited {
+        color: #ef4444;
+        font-weight: 600;
+      }
+      .status-unknown {
+        color: #9ca3af;
+        font-weight: 600;
+      }
+
+      /* Log */
+      .log {
+        max-height: 14rem;
+        overflow-y: auto;
+      }
+
+      /* Imagen */
+      .schema-img {
+        width: 100%;
+        max-height: 60vh;
+        height: auto;
+        object-fit: contain;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-md); /* sombra a la imagen también */
+      }
+
+      /* Scrollbar sutil */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.15);
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      /* Responsive */
+      @media (max-width: 900px) {
+        .content {
+          grid-template-columns: 1fr;
+          align-items: stretch;
+          overflow: auto;
+        }
+        body {
+          overflow: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="board">
+      <header class="dashboard-header">
+        <h1 class="dashboard-title">MySQL Distribuido</h1>
+        <nav class="actions">
+          <a href="{% url 'create_task' %}" class="btn">➕ Crear Tarea</a>
+          <a href="{% url 'list_tasks_slave' 'slave1' %}" class="btn"
+            >📄 Ver Slave 1</a
+          >
+          <a href="{% url 'list_tasks_slave' 'slave2' %}" class="btn"
+            >📄 Ver Slave 2</a
+          >
+          <a href="{% url 'list_tasks_slave' 'slave3' %}" class="btn"
+            >📄 Ver Slave 3</a
+          >
+        </nav>
+      </header>
+
+      <main class="content">
+        <!-- Columna izquierda: estado + log -->
+        <div class="left-column">
+          <!-- Estado Servidores -->
+          <section class="card">
+            <h2>🖥️ Estado de los Servidores</h2>
+            {% for nombre, estado in estados.items %}
+            <p>
+              <strong>{{ nombre }}:</strong>
+              {% if estado == 'running' %}
+              <span class="status-running">🟢 En ejecución</span>
+              <a
+                href="{% url 'stop_container' nombre %}"
+                class="btn"
+                style="margin-left: 0.5rem"
+                >🛑 Parar</a
+              >
+              {% elif estado == 'exited' %}
+              <span class="status-exited">🔴 Detenido</span>
+              <a
+                href="{% url 'start_container' nombre %}"
+                class="btn"
+                style="margin-left: 0.5rem"
+                >▶️ Arrancar</a
+              >
+              {% else %}
+              <span class="status-unknown">⚪ Desconocido</span>
+              {% endif %}
+            </p>
+            {% endfor %}
+          </section>
+
+          <!-- Log de Operaciones -->
+          <section class="card log">
+            <h2>📜 Log de Operaciones</h2>
+            {% for log in logs %}
+            <p>{{ log }}</p>
+            {% empty %}
+            <p>No hay operaciones registradas aún.</p>
+            {% endfor %}
+          </section>
+        </div>
+
+        <!-- Columna derecha: esquema centrado -->
+        <section class="card" style="align-self: center">
+          <h2>Esquema de la Última Operación</h2>
+          <img
+            src="{% url 'esquema_dinamico' %}"
+            alt="Esquema Dinámico"
+            class="schema-img"
+          />
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

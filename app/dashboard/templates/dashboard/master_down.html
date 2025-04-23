@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Master Caído · MySQL Distribuido</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --background: #f2f3f5;
+        --surface: #fff;
+        --primary: #ffbf0f;
+        --primary-h: #f4b303;
+        --text: #1f2937;
+        --radius: 12px;
+        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --background: #15181d;
+          --surface: #1f2937;
+          --text: #f3f4f6;
+          --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+      }
+      body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: "Inter", system-ui, sans-serif;
+        background: var(--background);
+        color: var(--text);
+      }
+      .board {
+        max-width: 500px;
+        padding: 2rem 2.5rem;
+        background: var(--surface);
+        border-radius: var(--radius);
+        text-align: center;
+        box-shadow: var(--shadow-md);
+      }
+      h1 {
+        font-size: 1.6rem;
+        font-weight: 600;
+        margin: 0 0 1rem;
+      }
+      p {
+        margin: 0 0 2rem;
+        font-size: 0.94rem;
+      }
+      .btn {
+        display: inline-block;
+        padding: 0.55rem 1.4rem;
+        background: var(--primary);
+        color: #1f2937;
+        font-weight: 600;
+        border-radius: 999px;
+        text-decoration: none;
+        box-shadow: var(--shadow-md);
+        transition: background 0.2s, transform 0.15s;
+      }
+      .btn:hover {
+        background: var(--primary-h);
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="board">
+      <h1>🚨 El Servidor Master está Caído</h1>
+      <p>
+        No se puede crear una tarea porque el servidor principal no está
+        disponible.
+      </p>
+      <a href="{% url 'home' %}" class="btn">← Volver al Dashboard</a>
+    </div>
+  </body>
+</html>

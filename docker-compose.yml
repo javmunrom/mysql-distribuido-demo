@@ -1,0 +1,78 @@
+services:
+  db-master:
+    build: ./master
+    container_name: db-master
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: tasks_db
+    volumes:
+      - master_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  db-slave1:
+    build: ./slave1
+    container_name: db-slave1
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: tasks_db
+    depends_on:
+      - db-master
+    volumes:
+      - slave1_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  db-slave2:
+    build: ./slave2
+    container_name: db-slave2
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: tasks_db
+    depends_on:
+      - db-master
+    volumes:
+      - slave2_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  db-slave3:
+    build: ./slave3
+    container_name: db-slave3
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: tasks_db
+    depends_on:
+      - db-master
+    volumes:
+      - slave3_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  django-app:
+    build: ./app
+    container_name: django-app
+    command:
+      ["/wait-for-db.sh", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - db-master
+    networks:
+      - app-network
+
+volumes:
+  master_data:
+  slave1_data:
+  slave2_data:
+  slave3_data:
+
+networks:
+  app-network:

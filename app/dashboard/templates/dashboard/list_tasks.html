@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tareas · {{ slave }}</title>
+
+    <!-- Tipografía + variables -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f2f3f5;
+        --surface: #fff;
+        --primary: #ffbf0f;
+        --primary-h: #f4b303;
+        --text: #1f2937;
+        --radius: 12px;
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #15181d;
+          --surface: #1f2937;
+          --text: #f3f4f6;
+          --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        font-family: "Inter", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      .board {
+        width: min(900px, 94%);
+        margin: 2rem auto;
+        padding: 2rem 2.4rem;
+        background: var(--surface);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      h2 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 1.4rem;
+        text-align: center;
+      }
+
+      /* Grid de tarjetas (2 columnas en desktop) */
+      .grid {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+
+      .task-card {
+        background: var(--surface);
+        border: 1px solid #e5e7eb;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1rem 1.2rem;
+        display: flex;
+        flex-direction: column;
+      }
+      .task-card h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.6rem;
+        color: var(--text);
+      }
+      .task-card p {
+        font-size: 0.88rem;
+        line-height: 1.45;
+        color: #4b5563;
+      }
+
+      .btn {
+        display: inline-block;
+        margin: 2rem auto 0;
+        padding: 0.55rem 1.4rem;
+        background: var(--primary);
+        color: #1f2937;
+        font-weight: 600;
+        border-radius: 999px;
+        text-decoration: none;
+        box-shadow: var(--shadow);
+        transition: background 0.2s, transform 0.15s;
+      }
+      .btn:hover {
+        background: var(--primary-h);
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body>
+    <section class="board">
+      <h2>Tareas en {{ slave }}</h2>
+
+      <div class="grid">
+        {% for task in tasks %}
+        <div class="task-card">
+          <h3>{{ task.title }}</h3>
+          <p>{{ task.description }}</p>
+        </div>
+        {% empty %}
+        <div class="task-card">
+          <h3>Sin tareas</h3>
+          <p>No hay tareas en este slave.</p>
+        </div>
+        {% endfor %}
+      </div>
+
+      <a href="{% url 'home' %}" class="btn">← Volver al Dashboard</a>
+    </section>
+  </body>
+</html>

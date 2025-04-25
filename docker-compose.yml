@@ -56,8 +56,6 @@ services:
   django-app:
     build: ./app
     container_name: django-app
-    command:
-      ["/wait-for-db.sh", "python", "manage.py", "runserver", "0.0.0.0:8000"]
     ports:
       - "8000:8000"
     volumes:

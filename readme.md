@@ -41,6 +41,22 @@ La app Django aplica automáticamente las migraciones al arrancar gracias a un `
 
 ---
 
+## ⚙️ Prerrequisitos
+
+Antes de desplegar el entorno, asegúrate de tener instalado en tu sistema:
+
+- **Docker** ≥ 20.x
+- **Docker Compose** ≥ 1.29
+- Navegador web actualizado (para acceder al panel de control)
+
+> 💡 _No es necesario instalar MySQL ni Python localmente, ya que todo el entorno se ejecuta en contenedores._
+
+Opcional:
+
+- **Git** (para clonar el repositorio cómodamente).
+
+---
+
 ## 3 · Puesta en marcha rápida
 
 ```bash

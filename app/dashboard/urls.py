@@ -8,6 +8,7 @@ urlpatterns = [
     path('stop/<str:container_name>/', views.stop_container, name='stop_container'),
     path('start/<str:container_name>/', views.start_container, name='start_container'),
     path('esquema/', views.esquema_dinamico, name='esquema_dinamico'),
+    path('tasks/dynamic/', views.list_tasks_dynamic, name='list_tasks_dynamic'),
 
     
 ]

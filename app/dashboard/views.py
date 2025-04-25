@@ -305,7 +305,24 @@ def esquema_dinamico(request):
             contenedor = ultimo_log.split("Parado ")[1]
             draw_node(0.38, 0.45, f"{contenedor} detenido", color="error", w=0.34, h=0.14)
             plt.title(f"{contenedor} detenido", fontsize=12)
+        elif "Consulta dinámica" in ultimo_log:
+            draw_node(0.05, 0.45, "Usuario")
+            draw_node(0.38, 0.45, "Django")
+            
+            # Detectar qué slave fue seleccionado en el log
+            if "slave1" in ultimo_log:
+                slave = "Slave 1"
+            elif "slave2" in ultimo_log:
+                slave = "Slave 2"
+            elif "slave3" in ultimo_log:
+                slave = "Slave 3"
+            else:
+                slave = "Slave"
 
+            draw_node(0.71, 0.45, slave, color="slave")
+            draw_arrow(0.29, 0.51, 0.38, 0.51)
+            draw_arrow(0.62, 0.51, 0.71, 0.51)
+            plt.title(f"Lectura dinámica desde {slave}", fontsize=11)
         else:
             ax.text(
                 0.5, 0.5,
@@ -313,6 +330,7 @@ def esquema_dinamico(request):
                 fontsize=12, ha="center", va="center",
                 color="#6b7280",
             )
+        
 
     # ── Exportar imagen ─────────────────────────────────────────────────────────
     buffer = io.BytesIO()
@@ -320,3 +338,25 @@ def esquema_dinamico(request):
     plt.close(fig)
     buffer.seek(0)
     return HttpResponse(buffer.getvalue(), content_type="image/png")
+
+
+def list_tasks_dynamic(request):
+    available_slaves = []
+    for slave_key, container_name in CONTAINER_NAMES.items():
+        try:
+            container = client.containers.get(container_name)
+            container.reload()
+            if container.status == 'running':
+                available_slaves.append(slave_key)
+        except docker.errors.NotFound:
+            continue
+
+    if not available_slaves:
+        operation_log.append(f"[{now().strftime('%H:%M:%S')}] ❌ No hay slaves disponibles para lectura.")
+        return render(request, 'dashboard/no_slaves.html', {'checked_slaves': CONTAINER_NAMES.keys()})
+
+    selected_slave = random.choice(available_slaves)
+    tasks = Task.objects.using(selected_slave).all()
+    operation_log.append(f"[{now().strftime('%H:%M:%S')}] 📄 Consulta dinámica desde {selected_slave}")
+
+    return render(request, 'dashboard/list_tasks.html', {'tasks': tasks, 'slave': selected_slave})
